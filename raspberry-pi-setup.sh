@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Raspberry Pi 5 Automated Setup Script
-# Version: 1.0.1
+# Version: 1.0.2
 
 # Removed set -e to allow script to continue on individual failures
 
