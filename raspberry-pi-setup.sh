@@ -1,9 +1,7 @@
 #!/bin/bash
 
 # Raspberry Pi 5 Automated Setup Script
-# Inspired by Proxmox VE Helper Scripts
-# Author: AI Assistant
-# Version: 1.0.0
+# Version: 1.0.1
 
 # Removed set -e to allow script to continue on individual failures
 
