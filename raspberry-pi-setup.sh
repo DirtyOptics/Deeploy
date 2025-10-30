@@ -599,14 +599,31 @@ show_menu() {
         echo -e "${WHITE}Select installation options:${NC}"
         echo ""
         echo -e "${GREEN}1)${NC} ${PACKAGE} Install All (Recommended)"
+        echo -e "   ${CYAN}   → Installs everything: system updates, essentials, monitoring, security tools, database, and GPS tools${NC}"
+        echo ""
         echo -e "${GREEN}2)${NC} ${GEAR} System Configuration Only"
+        echo -e "   ${CYAN}   → Configures Raspberry Pi settings: expand filesystem, enable SSH/VNC, set WiFi region${NC}"
+        echo ""
         echo -e "${GREEN}3)${NC} ${MONITOR} Monitoring Stack (Grafana + InfluxDB)"
+        echo -e "   ${CYAN}   → Installs time-series database (InfluxDB) and visualization dashboard (Grafana)${NC}"
+        echo ""
         echo -e "${GREEN}4)${NC} ${SECURITY} Network Security Tools"
+        echo -e "   ${CYAN}   → Installs network analysis tools: nmap, wireshark, aircrack-ng, bettercap, kismet${NC}"
+        echo ""
         echo -e "${GREEN}5)${NC} ${DATABASE} Database (PostgreSQL)"
+        echo -e "   ${CYAN}   → Installs and configures PostgreSQL database server with contrib modules${NC}"
+        echo ""
         echo -e "${GREEN}6)${NC} ${NETWORK} GPS Tools"
+        echo -e "   ${CYAN}   → Installs GPS daemon and tools for GPS device connectivity and data collection${NC}"
+        echo ""
         echo -e "${GREEN}7)${NC} ${TOOLS} Essential Packages Only"
+        echo -e "   ${CYAN}   → Installs basic utilities: curl, wget, git, htop, nano, vim, tree, jq, dialog${NC}"
+        echo ""
         echo -e "${GREEN}8)${NC} Custom Selection"
+        echo -e "   ${CYAN}   → Choose specific components to install from a detailed selection menu${NC}"
+        echo ""
         echo -e "${GREEN}9)${NC} Exit"
+        echo -e "   ${CYAN}   → Exit the setup script without making changes${NC}"
         echo ""
         read -p "Enter your choice [1-9]: " choice
         
@@ -667,28 +684,58 @@ show_menu() {
 show_custom_menu() {
     print_header "Custom Selection"
     
-    local options=(
-        "System Update" "on"
-        "Essential Packages" "on"
-        "System Configuration" "on"
-        "Monitoring Stack" "off"
-        "Network Tools" "off"
-        "Database" "off"
-        "GPS Tools" "off"
-    )
+    local selected_components=()
     
-    local selections=()
-    for ((i=0; i<${#options[@]}; i+=2)); do
-        selections+=("${options[i]}")
-        selections+=("${options[i+1]}")
-    done
+    echo ""
+    echo -e "${WHITE}Select components to install (y/n for each):${NC}"
+    echo ""
     
-    # Use dialog for multi-select
-    local choices=$(dialog --checklist "Select components to install:" 20 60 10 "${selections[@]}" 2>&1 >/dev/tty)
+    # System Update
+    read -p "Install System Update? (y/N): " choice
+    if [[ $choice =~ ^[Yy]$ ]]; then
+        selected_components+=("System Update")
+    fi
     
-    if [[ -n "$choices" ]]; then
-        for choice in $choices; do
-            case $choice in
+    # Essential Packages
+    read -p "Install Essential Packages? (y/N): " choice
+    if [[ $choice =~ ^[Yy]$ ]]; then
+        selected_components+=("Essential Packages")
+    fi
+    
+    # System Configuration
+    read -p "Install System Configuration? (y/N): " choice
+    if [[ $choice =~ ^[Yy]$ ]]; then
+        selected_components+=("System Configuration")
+    fi
+    
+    # Monitoring Stack
+    read -p "Install Monitoring Stack? (y/N): " choice
+    if [[ $choice =~ ^[Yy]$ ]]; then
+        selected_components+=("Monitoring Stack")
+    fi
+    
+    # Network Tools
+    read -p "Install Network Tools? (y/N): " choice
+    if [[ $choice =~ ^[Yy]$ ]]; then
+        selected_components+=("Network Tools")
+    fi
+    
+    # Database
+    read -p "Install Database? (y/N): " choice
+    if [[ $choice =~ ^[Yy]$ ]]; then
+        selected_components+=("Database")
+    fi
+    
+    # GPS Tools
+    read -p "Install GPS Tools? (y/N): " choice
+    if [[ $choice =~ ^[Yy]$ ]]; then
+        selected_components+=("GPS Tools")
+    fi
+    
+    if [[ ${#selected_components[@]} -gt 0 ]]; then
+        print_info "Selected components: ${selected_components[*]}"
+        for component in "${selected_components[@]}"; do
+            case $component in
                 "System Update")
                     update_system
                     ;;
