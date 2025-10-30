@@ -1,0 +1,49 @@
+---
+globs: *.sh
+description: Bash script development guidelines for Raspberry Pi automation
+---
+
+# Bash Script Development Rules
+
+## Script Structure
+- **Shebang**: Always use `#!/bin/bash`
+- **Error Handling**: Use `run_command()` function for all external commands
+- **Logging**: All operations logged to `/tmp/raspberry-pi-setup.log`
+- **Color Output**: Use predefined color functions (print_success, print_error, print_warning, print_info)
+
+## Error Handling Pattern
+```bash
+if run_command "command" "description" "function_name"; then
+    ((success_count++))
+else
+    print_warning "Operation failed, continuing..."
+fi
+```
+
+## Package Installation
+- **Check availability** before installation using `check_package_exists()`
+- **Use install_package()** function for all package installations
+- **Track success/failure** counts for each category
+- **Continue on failures** - never stop the entire script
+
+## Service Management
+- **Use validate_service()** to check if services are running
+- **Enable and start** services after installation
+- **Provide access information** (URLs, ports, credentials)
+
+## Repository Setup
+- **Use add_repository()** function for external repositories
+- **Modern GPG key handling** (no deprecated apt-key)
+- **Auto-detect OS version** using `lsb_release -cs`
+
+## Code Style
+- **Consistent indentation**: 4 spaces
+- **Function names**: snake_case
+- **Variable names**: lowercase with underscores
+- **Comments**: Explain complex logic and error handling
+
+## Testing
+- **Test individual functions** before adding to main menu
+- **Update success counters** when adding new operations
+- **Use consistent naming** for new functions
+- **Add to both main menu and custom menu**

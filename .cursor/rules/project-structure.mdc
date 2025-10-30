@@ -1,0 +1,46 @@
+---
+alwaysApply: true
+---
+
+# Project Structure Guide
+
+## Main Files
+- **Script**: [raspberry-pi-setup.sh](mdc:raspberry-pi-setup.sh) - Main automation script
+- **Documentation**: [README.md](mdc:README.md) - Project documentation and usage instructions
+
+## Script Architecture
+The main script follows a modular design with these key functions:
+
+### Core Functions
+- `display_system_info()` - Shows hardware, network, and system details
+- `check_raspberry_pi()` - Validates Pi hardware
+- `check_network()` - Tests internet connectivity
+- `check_prerequisites()` - Ensures required tools are available
+- `check_disk_space()` - Validates sufficient storage
+
+### Installation Functions
+- `update_system()` - System updates and package management
+- `install_essentials()` - Basic tools and utilities
+- `configure_system()` - raspi-config automation
+- `install_monitoring_stack()` - Grafana + InfluxDB
+- `install_network_tools()` - Security and network utilities
+- `install_database()` - PostgreSQL
+- `install_gps_tools()` - GPSD and related tools
+
+### UI Functions
+- `show_menu()` - Main interactive menu
+- `show_custom_menu()` - Multi-select dialog
+- `run_command()` - Command execution with error handling
+- `validate_service()` - Service health checking
+
+## Error Handling
+- **No `set -e`** - Script continues on individual failures
+- **Success tracking** - Counts successful vs failed operations
+- **Comprehensive logging** - All operations logged with timestamps
+- **User feedback** - Clear success/warning/error messages
+
+## Customization Points
+- **Package lists** - Easy to add/remove software
+- **raspi-config options** - Simple to add new configurations
+- **Menu options** - Straightforward to add new categories
+- **Error messages** - Consistent formatting and emoji usage

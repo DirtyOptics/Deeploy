@@ -145,31 +145,32 @@ validate_service() {
 # Function to display system information
 display_system_info() {
     print_header "System Information"
+    log_message "Displaying system information"
     
-    # Get basic system info
-    local hostname=$(hostname)
+    # Get basic system info with error handling
+    local hostname=$(hostname 2>/dev/null || echo "Unknown")
     local os_version=$(lsb_release -d 2>/dev/null | cut -f2 || echo "Unknown")
-    local kernel=$(uname -r)
-    local arch=$(uname -m)
-    local uptime=$(uptime -p 2>/dev/null || uptime | awk '{print $3,$4}' | sed 's/,//')
+    local kernel=$(uname -r 2>/dev/null || echo "Unknown")
+    local arch=$(uname -m 2>/dev/null || echo "Unknown")
+    local uptime=$(uptime -p 2>/dev/null || uptime | awk '{print $3,$4}' | sed 's/,//' 2>/dev/null || echo "Unknown")
     
-    # Get Raspberry Pi specific info
+    # Get Raspberry Pi specific info with error handling
     local pi_model=$(cat /proc/device-tree/model 2>/dev/null | tr -d '\0' || echo "Unknown")
-    local pi_revision=$(cat /proc/cpuinfo | grep "Revision" | awk '{print $3}' | head -1 || echo "Unknown")
-    local pi_serial=$(cat /proc/cpuinfo | grep "Serial" | awk '{print $3}' | head -1 || echo "Unknown")
+    local pi_revision=$(cat /proc/cpuinfo 2>/dev/null | grep "Revision" | awk '{print $3}' | head -1 || echo "Unknown")
+    local pi_serial=$(cat /proc/cpuinfo 2>/dev/null | grep "Serial" | awk '{print $3}' | head -1 || echo "Unknown")
     
-    # Get network information
+    # Get network information with error handling
     local primary_ip=$(ip route get 1.1.1.1 2>/dev/null | awk '{print $7}' | head -1 || echo "Not connected")
-    local primary_mac=$(ip link show | grep -A1 "state UP" | grep -o "..:..:..:..:..:.." | head -1 || echo "Unknown")
+    local primary_mac=$(ip link show 2>/dev/null | grep -A1 "state UP" | grep -o "..:..:..:..:..:.." | head -1 || echo "Unknown")
     
-    # Get memory and storage info
-    local total_mem=$(free -h | grep "Mem:" | awk '{print $2}')
-    local available_mem=$(free -h | grep "Mem:" | awk '{print $7}')
-    local disk_usage=$(df -h / | awk 'NR==2 {print $3 "/" $2 " (" $5 " used)"}')
+    # Get memory and storage info with error handling
+    local total_mem=$(free -h 2>/dev/null | grep "Mem:" | awk '{print $2}' || echo "Unknown")
+    local available_mem=$(free -h 2>/dev/null | grep "Mem:" | awk '{print $7}' || echo "Unknown")
+    local disk_usage=$(df -h / 2>/dev/null | awk 'NR==2 {print $3 "/" $2 " (" $5 " used)"}' || echo "Unknown")
     
-    # Get CPU info
-    local cpu_info=$(cat /proc/cpuinfo | grep "model name" | head -1 | cut -d: -f2 | xargs || echo "ARM Processor")
-    local cpu_cores=$(nproc)
+    # Get CPU info with error handling
+    local cpu_info=$(cat /proc/cpuinfo 2>/dev/null | grep "model name" | head -1 | cut -d: -f2 | xargs || echo "ARM Processor")
+    local cpu_cores=$(nproc 2>/dev/null || echo "Unknown")
     
     # Get temperature (if available)
     local temp=$(vcgencmd measure_temp 2>/dev/null | cut -d= -f2 || echo "N/A")
@@ -376,7 +377,7 @@ configure_system() {
     print_header "System Configuration"
     
     local success_count=0
-    local total_operations=5
+    local total_operations=4
     
     if run_command "sudo raspi-config nonint do_expand_rootfs" "Expanding filesystem" "configure_system"; then
         ((success_count++))
@@ -391,10 +392,6 @@ configure_system() {
     fi
     
     if run_command "sudo raspi-config nonint do_ssh 0" "Enabling SSH" "configure_system"; then
-        ((success_count++))
-    fi
-    
-    if run_command "sudo raspi-config nonint do_memory_split 16" "Setting GPU memory split to 16" "configure_system"; then
         ((success_count++))
     fi
     
@@ -705,7 +702,12 @@ main() {
     check_disk_space
     
     # Display system information
+    echo ""
+    print_info "Displaying system information..."
     display_system_info
+    
+    # Pause to let user see the information
+    read -p "Press Enter to continue to the main menu..."
     
     # Show main menu
     show_menu

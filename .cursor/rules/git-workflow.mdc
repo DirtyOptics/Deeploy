@@ -1,0 +1,33 @@
+---
+description: Git workflow and repository management for Raspberry Pi automation project
+---
+
+# Git Workflow Rules
+
+## Repository Information
+- **Repository**: DirtyOptics/Deeploy
+- **Main Branch**: main
+- **Remote URL**: https://github.com/DirtyOptics/Deeploy.git
+
+## Authentication
+- Use GitHub CLI (`gh auth login`) for authentication across multiple repositories
+- Avoid using stored credentials when switching between private/public repos
+- Clear credential cache if experiencing authentication issues: `git credential-cache exit`
+
+## Workflow
+1. **Always check status** before making changes: `git status`
+2. **Stage changes** using Cursor's Source Control panel (Ctrl+Shift+G)
+3. **Write descriptive commit messages** following format: "Action: Description"
+4. **Push changes** using Cursor's built-in Git integration
+5. **Pull before pushing** if working with others: `git pull origin main`
+
+## Common Commands
+- **Check remote**: `git remote -v`
+- **Set upstream**: `git branch --set-upstream-to=origin/main main`
+- **Pull with merge**: `git config pull.rebase false && git pull`
+- **Clear credentials**: `git config --global --unset credential.helper`
+
+## File Management
+- Main script: [raspberry-pi-setup.sh](mdc:raspberry-pi-setup.sh)
+- Documentation: [README.md](mdc:README.md)
+- Always stage both files together when making changes

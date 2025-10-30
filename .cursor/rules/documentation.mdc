@@ -1,0 +1,48 @@
+---
+globs: *.md
+description: Documentation standards for Raspberry Pi automation project
+---
+
+# Documentation Rules
+
+## README.md Structure
+- **Clear title** with project purpose
+- **Quick start** with one-liner installation
+- **Feature list** with emoji indicators
+- **Requirements** section with hardware/software specs
+- **Installation options** explaining the menu system
+- **Usage examples** with expected output
+- **Customization guide** with code examples
+- **Troubleshooting** for common issues
+
+## Code Documentation
+- **Function headers** with purpose and parameters
+- **Inline comments** for complex logic
+- **Error handling** explanations
+- **Usage examples** in comments
+
+## Commit Messages
+- **Format**: "Action: Description"
+- **Examples**:
+  - "Add: New software category for development tools"
+  - "Fix: Error handling in package installation"
+  - "Update: README with new installation options"
+  - "Refactor: Improve service validation logic"
+
+## Version Updates
+- **Update version** in script header when making significant changes
+- **Update README** when adding new features
+- **Document breaking changes** in commit messages
+- **Keep changelog** of major modifications
+
+## User-Facing Messages
+- **Consistent emoji usage** (✅ for success, ❌ for errors, ⚠️ for warnings)
+- **Clear descriptions** of what each operation does
+- **Helpful error messages** with suggested solutions
+- **Progress indicators** for long-running operations
+
+## Code Examples
+- **Use bash syntax highlighting** in markdown
+- **Include expected output** for complex operations
+- **Show customization examples** with actual code
+- **Provide troubleshooting commands** users can run
