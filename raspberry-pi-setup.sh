@@ -204,6 +204,36 @@ display_system_info() {
     echo ""
 }
 
+# Function to display system information summary (compact version for menu)
+display_system_info_summary() {
+    # Get basic system info with error handling
+    local hostname=$(hostname 2>/dev/null || echo "Unknown")
+    local os_version=$(lsb_release -d 2>/dev/null | cut -f2 || echo "Unknown")
+    local kernel=$(uname -r 2>/dev/null || echo "Unknown")
+    local arch=$(uname -m 2>/dev/null || echo "Unknown")
+    
+    # Get Raspberry Pi specific info with error handling
+    local pi_model=$(cat /proc/device-tree/model 2>/dev/null | tr -d '\0' || echo "Unknown")
+    local cpu_cores=$(nproc 2>/dev/null || echo "Unknown")
+    
+    # Get network information with error handling
+    local primary_ip=$(ip route get 1.1.1.1 2>/dev/null | awk '{print $7}' | head -1 || echo "Not connected")
+    
+    # Get memory and storage info with error handling
+    local total_mem=$(free -h 2>/dev/null | grep "Mem:" | awk '{print $2}' || echo "Unknown")
+    local disk_usage=$(df -h / 2>/dev/null | awk 'NR==2 {print $5}' || echo "Unknown")
+    
+    # Get temperature (if available)
+    local temp=$(vcgencmd measure_temp 2>/dev/null | cut -d= -f2 || echo "N/A")
+    
+    echo -e "${CYAN}┌─ System Summary ─────────────────────────────────────────────┐${NC}"
+    echo -e "${CYAN}│${NC} ${WHITE}Hostname:${NC} $hostname ${CYAN}│${NC} ${WHITE}IP:${NC} $primary_ip ${CYAN}│${NC} ${WHITE}Temp:${NC} $temp ${CYAN}│${NC}"
+    echo -e "${CYAN}│${NC} ${WHITE}Model:${NC} $pi_model ${CYAN}│${NC} ${WHITE}OS:${NC} $os_version ${CYAN}│${NC}"
+    echo -e "${CYAN}│${NC} ${WHITE}Kernel:${NC} $kernel ${CYAN}│${NC} ${WHITE}Arch:${NC} $arch ${CYAN}│${NC} ${WHITE}CPU:${NC} $cpu_cores cores ${CYAN}│${NC}"
+    echo -e "${CYAN}│${NC} ${WHITE}Memory:${NC} $total_mem ${CYAN}│${NC} ${WHITE}Disk:${NC} $disk_usage used ${CYAN}│${NC}"
+    echo -e "${CYAN}└────────────────────────────────────────────────────────────┘${NC}"
+}
+
 # Function to check if running on Raspberry Pi
 check_raspberry_pi() {
     if [[ ! -f /proc/device-tree/model ]] || ! grep -q "Raspberry Pi" /proc/device-tree/model; then
@@ -561,6 +591,10 @@ show_menu() {
         clear
         echo -e "${PURPLE}${ROCKET} Raspberry Pi 5 Automated Setup${NC}"
         echo -e "${PURPLE}===========================================${NC}"
+        
+        # Display system information summary
+        display_system_info_summary
+        
         echo ""
         echo -e "${WHITE}Select installation options:${NC}"
         echo ""
@@ -700,14 +734,6 @@ main() {
     check_network
     check_prerequisites
     check_disk_space
-    
-    # Display system information
-    echo ""
-    print_info "Displaying system information..."
-    display_system_info
-    
-    # Pause to let user see the information
-    read -p "Press Enter to continue to the main menu..."
     
     # Show main menu
     show_menu
